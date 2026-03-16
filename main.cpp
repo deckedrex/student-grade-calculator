@@ -3,6 +3,8 @@
 #include <string>
 #include <iomanip>
 #include <algorithm>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
@@ -91,25 +93,55 @@ istream& operator>>(istream& in, Person& p) { // input operator
     cout << "Enter name and surname: ";
     in >> p.firstName >> p.surName;
 
-    int n;
-    cout<<"Enter number of homework grades: ";
-    in >> n;
-
     p.homeWork.clear();
-    for (int i = 0; i < n; i++) {
-        int grade;
-        cout<< "Homework " << i+1 <<": ";
-        in >> grade;
-        p.homeWork.push_back(grade);
+
+    char choice;
+    cout << "Generate grades randomly? (y/n): ";
+    in >> choice;
+    if (choice == 'y')
+    {
+        cout << "Generated Homework grades: ";
+        for (int i = 0; i < 5; i++)
+        {
+            int grade = rand() % 10 + 1;
+            p.homeWork.push_back(grade);
+
+            cout << grade << " ";
+
+        }
+
+        cout << endl;
+
+        p.exam =  rand() % 10 + 1;
+
+        cout << "Generated exam grade: " << p.exam << endl;
+
     }
-    cout << "Enter examgrade: ";
-    in >> p.exam;
+    else
+    {
+        int grade;
+        cout<<"Enter  homework grades (-1 to stop): ";
+
+        while(true)
+        {
+            in >> grade;
+            if(grade == -1)
+                break;
+
+            p.homeWork.push_back(grade);
+        }
+        cout << "Enter examgrade: ";
+        in >> p.exam;
+    }
+
+
     return in;
+
 }
 
 
-
-ostream& operator<<(ostream& out, const Person& p) {
+ostream& operator<<(ostream& out, const Person& p)
+{
     int choice;
 
     cout<< "choose calculating method:\n";
@@ -120,14 +152,24 @@ ostream& operator<<(ostream& out, const Person& p) {
     double grade = p.calculateFinalGrade(choice);
 
     out << setw(12) << p.firstName
-        << setw(12) << p.surName
-        << setw(15) << fixed << setprecision(2) << grade;
+        << setw(12) << p.surName;
+
+    if(choice == 1)
+    {
+        out << setw(20) << fixed << setprecision(2) << grade << " (Average)";
+    }
+    else
+    {
+        out << setw(20) << fixed << setprecision(2) << grade << " (Median)";
+    }
 
     return out;
 }
 
 int main()
 {
+    srand(time(NULL));
+
     Person student;
     cin >> student;
     cout << endl;
@@ -139,4 +181,4 @@ int main()
     cout << student << endl;
 
     return 0;
-}
+};
